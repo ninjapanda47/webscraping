@@ -1,9 +1,10 @@
-<ul style="margin: 0 100px 0 50px; display: inline-block">
-      <h3>Burgers were devoured</h3>
-  {{#each title}}
-        <li style="list-style-type: none; display: none">{{this.id}}</li>
-        <li style="list-style-type: none">Title: {{this.title}}</li>
-        <li style="list-style-type: none">Link: {{this.link}}</li>
-      </li>
+
+<h1 style="text-align: center">Articles</h1>
+<div class="card" style="width: 20rem;">
+  {{#each doc.results._id}}
+  <div class="card-block">
+    <h4 class="card-title">{{this.title}}</h4>
+    <a href="#" class="btn btn-primary">{{this.link}}</a>
+  </div>
   {{/each}}
-</ul>
+</div>

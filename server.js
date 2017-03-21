@@ -5,6 +5,7 @@ var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 var methodOverride = require("method-override");
+var path = require("path"); 
 var Note = require("./models/Note.js");
 var Article = require("./models/Article.js");
 // Require request and cheerio. This makes the scraping possible
@@ -38,8 +39,8 @@ app.use(logger("dev"));
 
 //routes
 
-app.get('/', function (req, res) {
-    res.render('index');
+app.get("/", function (req, res) {
+    res.render("index");
 });
 
 // Scrape data from one site and place it into the mongodb db
@@ -49,7 +50,6 @@ app.get("/scrape", function(req, res) {
     // Load the html body from request into cheerio
     var $ = cheerio.load(html);
 
-    for (i = 0; i < 10; i++) {//added for loop
     $(".story-heading").each(function(i, element) {
      var result = {};
       result.title = $(this).children("a").text();
@@ -64,11 +64,10 @@ app.get("/scrape", function(req, res) {
         }
         // Or log the doc
         else {
-          console.log(doc);
+          //console.log(doc);
         }
       });
     });
-    }//end of for loop
   });
   // Tell the browser that we finished scraping the text
   res.redirect("/articles");
@@ -84,7 +83,9 @@ app.get("/articles", function(req, res) {
     }
     // Or send the doc to the browser as a json object
     else {
-      res.json(doc);
+      // res.json(doc);
+      res.render("articles", doc);
+      console.log(doc)
     }
   });
 });
