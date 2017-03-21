@@ -82,34 +82,57 @@ app.get("/articles", function(req, res) {
     if (error) {
       console.log(error);
     }
-    // Or send the doc to the browser as a json object
     else {
       // res.json(doc);
       res.render("articles", {Article: doc});
-      console.log(doc)
     }
   });
 });
 
-// Grab an article by it's ObjectId
+// save articles to database and remove everything else
 app.get("/articles/:id", function(req, res) {
-  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-  Article.findOne({ "_id": req.params.id })
-  // ..and populate all of the notes associated with it
-  .populate("note")
-  // now, execute our query
+  Article.findOneAndUpdate({ "_id": req.params.id })
   .exec(function(error, doc) {
+    if (error) {
+      console.log(error);
+    }
+    else {
+      Articles.save = req.body.saved;
+      Articles.remove({saved: false}, function (err) {
+        if (err) return handleError(err);
+      });
+    }
+  });
+});
+
+// Create a new note or replace an existing note
+app.post("/articles/:id", function(req, res) {
+  // Create a new note and pass the req.body to the entry
+  var newNote = new Note(req.body);
+  // And save the new note the db
+  newNote.save(function(error, doc) {
     // Log any errors
     if (error) {
       console.log(error);
     }
-    // Otherwise, send the doc to the browser as a json object
+    // Otherwise
     else {
-      res.json(doc);
+      // Use the article id to find and update it's note
+      Article.findOneAndUpdate({ "_id": req.params.id }, { "note": doc._id })
+      // Execute the above query
+      .exec(function(err, doc) {
+        // Log any errors
+        if (err) {
+          console.log(err);
+        }
+        else {
+          // Or send the document to the browser
+          res.send(doc);
+        }
+      });
     }
   });
 });
-
 
 
 

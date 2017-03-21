@@ -1,10 +1,15 @@
 
-<h1 style="text-align: center">Articles</h1>
-<div class="card" style="width: 20rem;">
-  {{#each Article}}
+{{#each Article}}
+<div class="card" style="width: 80%; text-align: center; margin: 10px auto">
+  <p style="display: none">{{_id}}</p>
   <div class="card-block">
     <h4 class="card-title">{{title}}</h4>
-    <a href="#" class="btn btn-primary">{{link}}</a>
+    <a href="#">{{link}}</a>
+    <p>
+    <form action="articles/{{this.id}}?_method=PUT" method="POST">
+      <input type="hidden" name="saved" value="true">
+      <button type="submit" class="btn btn-primary">save</button>
+     </form>
   </div>
-  {{/each}}
 </div>
+{{/each}}
