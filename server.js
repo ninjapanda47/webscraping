@@ -54,13 +54,11 @@ app.get("/scrape", function(req, res) {
        var entry = new Article(result);
 
       entry.save(function(err, doc) {
-        // Log any errors
         if (err) {
           console.log(err);
         }
-        // Or log the doc
         else {
-          //console.log(doc);
+          //nothing really
         }
       });
     });
@@ -71,21 +69,18 @@ app.get("/scrape", function(req, res) {
 
 // This will get the articles we scraped from the mongoDB
 app.get("/articles", function(req, res) {
-  // Grab every doc in the Articles array
   var query = Article.find({saved: false}).limit(10); 
   query.exec(function(error, doc) {
-    // Log any errors
     if (error) {
       console.log(error);
     }
     else {
-      // res.json(doc);
       res.render("articles", {Article: doc});
     }
   });
 });
 
-// save articles to database and remove everything else
+// save articles to database 
 app.put("/articles/:id", function(req, res) {
   Article.findByIdAndUpdate({_id : req.params.id}, {$set: { saved: req.body.saved }},function
   (error, doc) {
@@ -94,14 +89,11 @@ app.put("/articles/:id", function(req, res) {
     }
     else {
       res.redirect("/articles")
-      // Article.remove({saved: false}, function (err) {
-      //   if (err) return handleError(err);
-      // });
     }
   });
 });
 
-// This will get the saved articles
+// This will get the saved articles and remove everything else
 app.get("/saved", function(req, res) {
   // Grab every doc in the Articles array
   var query = Article.find({saved: true}); 
@@ -112,6 +104,9 @@ app.get("/saved", function(req, res) {
     }
     else {
       res.render("saved", {Article: doc, Note: doc});
+      Article.remove({saved: false}, function (err) {
+        if (err) return handleError(err);
+      });
     }
   });
 });
@@ -140,7 +135,6 @@ app.post("/saved/:id", function(req, res) {
       Article.findOneAndUpdate({ "_id": req.params.id }, { "note": doc._id })
       .populate("Note")
       .exec(function(err, doc) {
-        // Log any errors
         if (err) {
           console.log(err);
         }
