@@ -8,7 +8,6 @@ var methodOverride = require("method-override");
 var path = require("path"); 
 var Note = require("./models/Note.js");
 var Article = require("./models/Article.js");
-// Require request and cheerio. This makes the scraping possible
 var request = require("request");
 var cheerio = require("cheerio");
 
@@ -38,22 +37,19 @@ app.set('view engine', 'handlebars');
 app.use(logger("dev"));
 
 //routes
-
 app.get("/", function (req, res) {
     res.render("index");
 });
 
-// Scrape data from one site and place it into the mongodb db
 app.get("/scrape", function(req, res) {
-  // Make a request for the news section of ycombinator
   request("https://www.nytimes.com/", function(error, response, html) {
-    // Load the html body from request into cheerio
     var $ = cheerio.load(html);
 
     $(".story-heading").each(function(i, element) {
      var result = {};
       result.title = $(this).children("a").text();
       result.link = $(this).children("a").attr("href");
+      result.saved = false;
 
        var entry = new Article(result);
 
@@ -69,14 +65,14 @@ app.get("/scrape", function(req, res) {
       });
     });
   });
-  // Tell the browser that we finished scraping the text
+
   res.redirect("/articles");
 });
 
 // This will get the articles we scraped from the mongoDB
 app.get("/articles", function(req, res) {
   // Grab every doc in the Articles array
-  var query = Article.find({}).limit(10); 
+  var query = Article.find({saved: false}).limit(10); 
   query.exec(function(error, doc) {
     // Log any errors
     if (error) {
@@ -90,44 +86,66 @@ app.get("/articles", function(req, res) {
 });
 
 // save articles to database and remove everything else
-app.get("/articles/:id", function(req, res) {
-  Article.findOneAndUpdate({ "_id": req.params.id })
-  .exec(function(error, doc) {
+app.put("/articles/:id", function(req, res) {
+  Article.findByIdAndUpdate({_id : req.params.id}, {$set: { saved: req.body.saved }},function
+  (error, doc) {
     if (error) {
       console.log(error);
     }
     else {
-      Articles.save = req.body.saved;
-      Articles.remove({saved: false}, function (err) {
-        if (err) return handleError(err);
-      });
+      res.redirect("/articles")
+      // Article.remove({saved: false}, function (err) {
+      //   if (err) return handleError(err);
+      // });
     }
   });
 });
 
-// Create a new note or replace an existing note
-app.post("/articles/:id", function(req, res) {
-  // Create a new note and pass the req.body to the entry
-  var newNote = new Note(req.body);
-  // And save the new note the db
-  newNote.save(function(error, doc) {
+// This will get the saved articles
+app.get("/saved", function(req, res) {
+  // Grab every doc in the Articles array
+  var query = Article.find({saved: true}); 
+  query.exec(function(error, doc) {
     // Log any errors
     if (error) {
       console.log(error);
     }
-    // Otherwise
     else {
-      // Use the article id to find and update it's note
+      res.render("saved", {Article: doc, Note: doc});
+    }
+  });
+});
+
+// save articles to database and remove everything else
+app.put("/saved/:id", function(req, res) {
+  Article.findByIdAndUpdate({_id : req.params.id}, {$set: { saved: req.body.saved }},function
+  (error, doc) {
+    if (error) {
+      console.log(error);
+    }
+    else {
+      res.redirect("/saved");
+    }
+  });
+});
+
+// // Create a new note or replace an existing note
+app.post("/saved/:id", function(req, res) {
+  var newNote = new Note(req.body);
+  newNote.save(function(error, doc) {
+    if (error) {
+      console.log(error);
+    }
+    else {
       Article.findOneAndUpdate({ "_id": req.params.id }, { "note": doc._id })
-      // Execute the above query
+      .populate("Note")
       .exec(function(err, doc) {
         // Log any errors
         if (err) {
           console.log(err);
         }
         else {
-          // Or send the document to the browser
-          res.send(doc);
+          res.redirect("/saved");
         }
       });
     }

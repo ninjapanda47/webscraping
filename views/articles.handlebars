@@ -1,15 +1,16 @@
-
 {{#each Article}}
+{{#unless saved}}
 <div class="card" style="width: 80%; text-align: center; margin: 10px auto">
   <p style="display: none">{{_id}}</p>
   <div class="card-block">
     <h4 class="card-title">{{title}}</h4>
-    <a href="#">{{link}}</a>
+    <a href="{{link}}">{{link}}</a>
     <p>
     <form action="articles/{{this.id}}?_method=PUT" method="POST">
       <input type="hidden" name="saved" value="true">
-      <button type="submit" class="btn btn-primary">save</button>
+      <button type="submit" class="btn btn-default">save</button>
      </form>
   </div>
 </div>
+{{/unless}}
 {{/each}}
