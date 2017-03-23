@@ -16,7 +16,7 @@ mongoose.Promise = Promise;
 var app = express();
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://localhost/nytscraper");
+mongoose.connect("mongodb://heroku_zv0mk2ws:ubh8oksf7jrdmqpo5ue194qg67@ds137760.mlab.com:37760/heroku_zv0mk2ws");
 var db = mongoose.connection;
 
 db.on("error", function(error) {
