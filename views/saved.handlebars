@@ -14,9 +14,11 @@
       <div class="modal-header">
         <h4 class="modal-title">Note</h4>
         <div class="card-block" style="border: 1px solid #000">
-            <p>{{#each note}}
+            <p>
+              {{#each note}}
                 {{this.body}}
-                {{/each}}</p>
+              {{/each}}
+            </p>
         </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
