@@ -96,7 +96,8 @@ app.put("/articles/:id", function(req, res) {
 // This will get the saved articles and remove everything else
 app.get("/saved", function(req, res) {
   // Grab every doc in the Articles array
-  var query = Article.find({saved: true}); 
+  var query = Article.find({saved: true}) 
+  .populate("note")
   query.exec(function(error, doc) {
     // Log any errors
     if (error) {
@@ -124,16 +125,16 @@ app.put("/saved/:id", function(req, res) {
   });
 });
 
-// // Create a new note or replace an existing note
+// Create a new note or replace an existing note
 app.post("/saved/:id", function(req, res) {
   var newNote = new Note(req.body);
+  console.log(req.params.id);
   newNote.save(function(error, doc) {
     if (error) {
       console.log(error);
     }
     else {
-      Article.findOneAndUpdate({ "_id": req.params.id }, { "note": doc._id })
-      .populate("Note")
+      Article.findOneAndUpdate({ "_id": req.params.id }, { "note": doc.id })
       .exec(function(err, doc) {
         if (err) {
           console.log(err);

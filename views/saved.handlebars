@@ -7,20 +7,22 @@
     <h4 class="card-title">{{title}}</h4>
     <a href="{{link}}">{{link}}</a>
     <br><br>
- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#noteModal">Note</button>
- <div class="modal fade" id="noteModal">
+ <button type="button" class="btn btn-default" data-toggle="modal" data-target="#{{this.id}}">Note</button>
+ <div class="modal fade" id="{{this.id}}">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Note</h5>
+        <h4 class="modal-title">Note</h4>
+        <div class="card-block" style="border: 1px solid #000">
+            <p>{{#each note}}
+                {{this.body}}
+                {{/each}}</p>
+        </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-
-       <p>{{body}}</p>   
-
      <form action="saved/{{this.id}}" method="POST">
       <input type="text" name="body">
       <button type="submit" class="btn btn-default">Add note</button>
@@ -40,4 +42,5 @@
 </div>
 {{/if}}  
 {{/each}}
+
 
