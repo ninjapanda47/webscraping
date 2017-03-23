@@ -148,6 +148,10 @@ app.post("/saved/:id", function(req, res) {
 });
 
 
-app.listen(port, function() {
-  console.log("App listening on PORT " + port);
+app.listen(process.env.PORT ||3000, function() {
+  if(process.env.PORT){
+    console.log("App listening on" + process.env.PORT);
+  }else{
+  console.log("App listening on PORT 3000");
+  }
 });
