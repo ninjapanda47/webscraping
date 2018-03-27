@@ -12,3 +12,5 @@ A webscraper app that lets your scrap and save articles from New York Times.
 - Bootstrap
 - MongoDB
 - Mongoose
+
+Deployed application located at https://peaceful-cliffs-22189.herokuapp.com/
